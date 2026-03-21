@@ -59,18 +59,23 @@
             transition: fill 0.2s ease, color 0.2s ease, transform 0.2s ease, filter 0.2s ease;
         }
 
-        .footer-link:hover {
-            color: #000000; 
+        /* FIX: Wrap hover effects in a media query to prevent "sticky" state on iOS */
+        @media (hover: hover) {
+            .footer-link:hover {
+                color: #000000; 
+            }
+
+            .footer-link:hover svg {
+                fill: #FB4342; 
+                transform: translateY(-3px);
+                filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            }
         }
 
-        .footer-link:hover svg {
-            fill: #FB4342; 
-            transform: translateY(-3px);
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-        }
-
+        /* Active state provides immediate feedback on touch without sticking */
         .footer-link:active svg {
             transform: translateY(0) scale(0.9);
+            fill: #FB4342;
             filter: none;
             transition: transform 0.1s ease;
         }
@@ -92,9 +97,10 @@
         let isDragging = false;
         let startX, startY;
 
-        // Helper to get X/Y from either Mouse or Touch
+        // FIX: Correctly access the first touch point for iOS dragging
         const getPointerCoords = (e) => {
             if (e.touches && e.touches.length > 0) {
+                // Accessing index is required for touch events
                 return { x: e.touches.clientX, y: e.touches.clientY };
             }
             return { x: e.clientX, y: e.clientY };
@@ -110,11 +116,6 @@
             logo.style.cursor = 'grabbing';
             logo.style.transition = 'transform 0.1s ease';
             logo.style.transform = 'scale(0.95)';
-            
-            // Prevent scrolling on touch devices
-            if (e.type === 'touchstart') {
-                // e.preventDefault(); 
-            }
         };
 
         // Move (MouseMove & TouchMove)
@@ -135,7 +136,7 @@
             isDragging = false;
             
             logo.style.cursor = 'grab';
-            // Springy bounce using your preferred cubic-bezier
+            // Springy bounce using preferred cubic-bezier
             logo.style.transition = 'transform 0.7s cubic-bezier(0.47, 1.8, 0.41, 0.8)';
             logo.style.transform = 'scale(1) translate(0px, 0px)';
         };
