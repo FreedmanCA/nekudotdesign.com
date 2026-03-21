@@ -15,7 +15,6 @@
             background-color: #ffffff; 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden; 
-            /* Trigger the graceful fade-in on load */
             animation: gracefulFadeIn 1.2s ease-out;
         }
 
@@ -32,8 +31,11 @@
             user-select: none;
             -webkit-user-drag: none;
             cursor: grab;
-            /* Initial transition for the fade-in and first hover */
             transition: transform 0.3s ease;
+            
+            /* CRITICAL FOR iOS: Prevents page scrolling while dragging logo */
+            touch-action: none;
+            -webkit-touch-callout: none;
         }
 
         /* 3. Footer Link & Mail Icon Interactivity */
@@ -50,16 +52,13 @@
             outline: none;
         }
 
-        /* Base SVG styling */
         svg {
             width: 22px; 
             height: 22px;
             fill: transparent;
-            /* Handles color, fill, lift, and shadow transitions */
             transition: fill 0.2s ease, color 0.2s ease, transform 0.2s ease, filter 0.2s ease;
         }
 
-        /* Hover: Color change, Red fill, and Lift with Shadow */
         .footer-link:hover {
             color: #000000; 
         }
@@ -70,7 +69,6 @@
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
         }
 
-        /* Click: Snap down and shrink */
         .footer-link:active svg {
             transform: translateY(0) scale(0.9);
             filter: none;
@@ -94,57 +92,76 @@
         let isDragging = false;
         let startX, startY;
 
-        // 1. Handle Hover (Scale Up)
+        // Helper to get X/Y from either Mouse or Touch
+        const getPointerCoords = (e) => {
+            if (e.touches && e.touches.length > 0) {
+                return { x: e.touches.clientX, y: e.touches.clientY };
+            }
+            return { x: e.clientX, y: e.clientY };
+        };
+
+        // Start Drag (MouseDown & TouchStart)
+        const onStart = (e) => {
+            isDragging = true;
+            const coords = getPointerCoords(e);
+            startX = coords.x;
+            startY = coords.y;
+            
+            logo.style.cursor = 'grabbing';
+            logo.style.transition = 'transform 0.1s ease';
+            logo.style.transform = 'scale(0.95)';
+            
+            // Prevent scrolling on touch devices
+            if (e.type === 'touchstart') {
+                // e.preventDefault(); 
+            }
+        };
+
+        // Move (MouseMove & TouchMove)
+        const onMove = (e) => {
+            if (!isDragging) return;
+            
+            const coords = getPointerCoords(e);
+            const deltaX = coords.x - startX;
+            const deltaY = coords.y - startY;
+            
+            logo.style.transition = 'none';
+            logo.style.transform = `scale(1.05) translate(${deltaX}px, ${deltaY}px)`;
+        };
+
+        // End Drag (MouseUp & TouchEnd)
+        const onEnd = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            logo.style.cursor = 'grab';
+            // Springy bounce using your preferred cubic-bezier
+            logo.style.transition = 'transform 0.7s cubic-bezier(0.47, 1.8, 0.41, 0.8)';
+            logo.style.transform = 'scale(1) translate(0px, 0px)';
+        };
+
+        // Mouse Events (Desktop)
+        logo.addEventListener('mousedown', onStart);
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onEnd);
+
+        // Touch Events (iOS/Android)
+        logo.addEventListener('touchstart', onStart, { passive: false });
+        window.addEventListener('touchmove', onMove, { passive: false });
+        window.addEventListener('touchend', onEnd);
+
+        // Hover Effect (Desktop Only)
         logo.addEventListener('mouseenter', () => {
             if (!isDragging) {
                 logo.style.transition = 'transform 0.3s ease';
                 logo.style.transform = 'scale(1.03)';
             }
         });
-
-        // 2. Handle Mouse Leave (Return to Normal)
         logo.addEventListener('mouseleave', () => {
             if (!isDragging) {
                 logo.style.transition = 'transform 0.3s ease';
                 logo.style.transform = 'scale(1)';
             }
-        });
-
-        // 3. Handle Mouse Down (Tactile Press & Start Drag)
-        logo.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            e.preventDefault();
-            startX = e.clientX;
-            startY = e.clientY;
-            
-            logo.style.cursor = 'grabbing';
-            // Quick press feedback
-            logo.style.transition = 'transform 0.1s ease';
-            logo.style.transform = 'scale(0.95)';
-        });
-
-        // 4. Handle Movement
-        window.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            
-            const deltaX = e.clientX - startX;
-            const deltaY = e.clientY - startY;
-            
-            // Disable transitions for instant drag response
-            logo.style.transition = 'none';
-            // Maintain a slightly larger "carrying" scale while moving
-            logo.style.transform = `scale(1.05) translate(${deltaX}px, ${deltaY}px)`;
-        });
-
-        // 5. Handle Release (Snap Back)
-        window.addEventListener('mouseup', () => {
-            if (!isDragging) return;
-            isDragging = false;
-            
-            logo.style.cursor = 'grab';
-            // Bouncy snap back to center using Apple-style cubic-bezier
-            logo.style.transition = 'transform 0.7s cubic-bezier(0.47, 1.8, 0.41, 0.8)';
-            logo.style.transform = 'scale(1) translate(0px, 0px)';
         });
     </script>
 
