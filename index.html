@@ -29,8 +29,16 @@
             width: 30%;       
             height: auto;
             display: block;
-            user-select: none;
+            
+            /* Enhanced Unselectable Properties */
+            user-select: none;           /* Standard */
+            -webkit-user-select: none;    /* Safari/Chrome */
+            -ms-user-select: none;       /* Internet Explorer/Edge */
+            
+            /* Prevents the ghost image during drag */
             -webkit-user-drag: none;
+            pointer-events: auto;        /* Ensures your JS events still work */
+            
             cursor: grab;
             /* Initial transition for the fade-in and first hover */
             transition: transform 0.3s ease;
