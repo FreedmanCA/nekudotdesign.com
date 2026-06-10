@@ -125,6 +125,19 @@
             }
         });
 
+
+	// Handle Mobile Touch Start (Tactile Press & Start Drag)
+        logo.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            // e.touches ensures we track the primary finger contact
+            startX = e.touches.clientX;
+            startY = e.touches.clientY;
+            
+            logo.style.transition = 'transform 0.1s ease';
+            logo.style.transform = 'scale(0.95)';
+        }, { passive: true });
+
+
         // 3. Handle Mouse Down (Tactile Press & Start Drag)
         logo.addEventListener('mousedown', (e) => {
             isDragging = true;
@@ -138,6 +151,22 @@
             logo.style.transform = 'scale(0.95)';
         });
 
+
+	// Handle Mobile Touch Movement
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            
+            const deltaX = e.touches.clientX - startX;
+            const deltaY = e.touches.clientY - startY;
+            
+            logo.style.transition = 'none';
+            logo.style.transform = `scale(1.05) translate(${deltaX}px, ${deltaY}px)`;
+            
+            // Prevents iOS from scrolling the web page while dragging the logo
+            if (e.cancelable) e.preventDefault();
+        }, { passive: false });
+
+
         // 4. Handle Movement
         window.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
@@ -150,6 +179,17 @@
             // Maintain a slightly larger "carrying" scale while moving
             logo.style.transform = `scale(1.05) translate(${deltaX}px, ${deltaY}px)`;
         });
+
+
+	// Handle Mobile Touch Release (Snap Back)
+        window.addEventListener('touchend', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            logo.style.transition = 'transform 0.7s cubic-bezier(0.47, 1.8, 0.41, 0.8)';
+            logo.style.transform = 'scale(1) translate(0px, 0px)';
+        });
+
 
         // 5. Handle Release (Snap Back)
         window.addEventListener('mouseup', () => {
