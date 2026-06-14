@@ -31,6 +31,17 @@
             transition: transform 0.3s ease;
             display: block;
             margin: 60px auto 48px auto;
+            animation: logoIntro 1s cubic-bezier(0.47, 1.8, 0.41, 0.8) 0.2s backwards;;
+        }
+
+        @keyframes logoIntro {
+            0%   { transform: scale(0.6); opacity: 0; }
+            60%  { opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #interactiveLogo { animation: none; }
         }
 
         @media (max-width: 1024px) {
@@ -255,12 +266,13 @@
         });
 
         logo.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            logo.style.transition = 'transform 0.1s ease';
-            logo.style.transform = 'scale(0.95)';
-        });
+    		isDragging = true;
+		 startX = e.clientX;
+		 startY = e.clientY;
+		 logo.style.cursor = 'grabbing';
+		 logo.style.transition = 'transform 0.1s ease';
+		 logo.style.transform = 'scale(0.95)';
+	});
 
         window.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
@@ -271,11 +283,12 @@
         });
 
         window.addEventListener('mouseup', () => {
-            if (!isDragging) return;
-            isDragging = false;
-            logo.style.transition = 'transform 0.7s cubic-bezier(0.47, 1.8, 0.41, 0.8)';
-            logo.style.transform = 'scale(1) translate(0px, 0px)';
-        });
+   		if (!isDragging) return;
+    		isDragging = false;
+    		logo.style.cursor = 'grab';
+    		logo.style.transition = 'transform 0.7s cubic-bezier(0.47, 1.8, 0.41, 0.8)';
+   		 logo.style.transform = 'scale(1) translate(0px, 0px)';
+	});
     </script>
 
 </body>
