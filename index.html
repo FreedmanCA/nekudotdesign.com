@@ -56,7 +56,21 @@
             #interactiveLogo { animation: none; }
         }
 
+        /* Soft fade behind footer */
+        body::after {
+            content: "";
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 120px;
+            background: linear-gradient(to top, #ffffff 45%, rgba(255, 255, 255, 0));
+            pointer-events: none;
+            z-index: 1;
+        }
+
         .footer {
+            z-index: 2;
             position: absolute;
             bottom: 40px;
             left: 50%;
@@ -152,8 +166,13 @@
         </a>
 
         <!-- SMP product icon -->
-        <a href="https://studiomemorypro.com" target="_blank" rel="noopener noreferrer" class="smp-link" title="StudioMemoryPro">
-            <img src="SMPLogo.png" alt="StudioMemoryPro">
+        <a href="https://studiomemoryapp.com" target="_blank" rel="noopener noreferrer" class="smp-link" title="StudioMemory">
+            <img src="SMPLogo.png" alt="StudioMemory">
+        </a>
+
+        <!-- LF product icon -->
+        <a href="https://legacyfolioapp.com" target="_blank" rel="noopener noreferrer" class="smp-link" title="LegacyFolio">
+            <img src="LFLogo.png" alt="LegacyFolio">
         </a>
 
         <!-- Email -->
